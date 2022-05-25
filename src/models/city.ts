@@ -1,5 +1,5 @@
 import { Table, Column, Model, DataType, PrimaryKey } from 'sequelize-typescript'
-import { Field, ID, ObjectType } from 'type-graphql'
+import { Field, ID, InputType, ObjectType } from 'type-graphql'
 
 @Table({
   timestamps: false,
@@ -9,27 +9,48 @@ import { Field, ID, ObjectType } from 'type-graphql'
 export default class City extends Model {
   @Field(type => ID)
   @PrimaryKey
-  @Column(DataType.BIGINT)
+  @Column({type: DataType.BIGINT, autoIncrement: true})
   index: number
 
-  @Field()
+  @Field({name: 'country'})
   @Column(DataType.TEXT)
   "Country": string
 
-  @Field()
+  @Field({name: 'cityName'})
   @Column(DataType.TEXT)
   "City": string
 
-  @Field()
+  @Field({name: 'population'})
   @Column(DataType.BIGINT)
   "Population": number
 
-  @Field()
+  @Field({name: 'lat'})
   @Column(DataType.REAL)
   "Latitude": number
 
-  @Field()
+  @Field({name: 'long'})
   @Column(DataType.REAL)
   "Longitude": number
+}
 
+
+@InputType()
+export class CityInput{
+  @Field()
+  index: number
+
+  @Field()
+  country: string
+
+  @Field()
+  cityName: string
+
+  @Field()
+  population: number
+
+  @Field()
+  lat: number
+
+  @Field()
+  long: number
 }

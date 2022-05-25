@@ -13,7 +13,7 @@ export default class DevelopmentIndex extends Model {
     @Column(DataType.BIGINT)
     index: number
 
-    @Field()
+    @Field({name: "HDIRank"})
     @Column(DataType.BIGINT)
     "HDI Rank": number
 

@@ -1,62 +1,37 @@
-import City from "../models/city";
-import { Arg, Query, Resolver } from "type-graphql";
+import City, { CityInput } from "../models/city";
+import { Arg, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
 import DevelopmentIndex from "../models/development_index";
+import { newCity } from "../services/cities.service";
 
 @Resolver(City)
 export class CityResolver {
     @Query(returns => City)
-    async city(@Arg("id") id: string) {
-        console.log("the id is: ", id)
-        return {
-            "index": 1,
-            "Country": "Armenia",
-            "City": "Yerevan",
-            "Population": 2700000,
-            "Latitude": 44,
-            "Longitude": 41
-        }
+    async city(@Arg("index") index: string) {
+        console.log("the index is: ", index)
+        return City.findOne({where:{index}})
     }
 
-    @Query(returns => City)
-    async cityFromDB(@Arg("id") id: string) {
-        console.log("the id is: ", id)
-        return await City.findOne({
-            where: { index: id }
+    @FieldResolver(() => DevelopmentIndex,{nullable:true})
+    async devIndex(@Root() city: City){
+        console.log('doing query')
+        const entry = await DevelopmentIndex.findOne({
+            where: { Country: city.Country }
         })
+
+        return entry;
     }
 
     @Query(returns => [City])
-    async cityByCountry(@Arg("Country") Country: string) {
-        console.log("the country is: ", Country)
-        const cities = await City.findAll({
-            where: { Country }
-        })
-        return cities
+    async cities(@Arg("country") country: string){
+        console.log("the country is: ", country)
+        return City.findAll({where:{Country: country}})
     }
 
-    @Query(returns => City)
-    async getCityAndDI(@Arg("id") id: string) {
-        console.log("the id is: ", id)
-        const target = await City.findOne({
-            where: { index: id }
-        })
-        const devIndex = await this.getDevIndex(target.Country)
+    @Mutation(returns => City)
+    async addCity(@Arg("data") cityData: CityInput){
+        console.log("city to add:", cityData);
 
-        const result = {
-            ...target,
-            ...devIndex
-        }
-
-        return result
-    }
-
-    @Query(returns => DevelopmentIndex)
-    async getDevIndex(@Arg("Country") Country: string) {
-        console.log("the country is: ", Country)
-        const entry = await DevelopmentIndex.findOne({
-            where: { Country }
-        })
-        return entry
+        return newCity(cityData)
     }
 
 }

@@ -8,6 +8,7 @@
     "build": "tsc",
     "prestart": "npm run build",
     "start": "node .",
+    "start:dist": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,8 +23,13 @@
   "homepage": "https://github.com/ashaman98/sentiumTask#readme",
   "dependencies": {
     "apollo-server-express": "^3.8.1",
+    "bcryptjs": "^2.4.3",
+    "class-validator": "^0.13.2",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
+    "express-jwt": "^7.7.2",
+    "graphql": "^15.8.0",
+    "jsonwebtoken": "^8.5.1",
     "pg": "^8.7.3",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.20.0",
@@ -31,10 +37,9 @@
     "type-graphql": "^1.1.1"
   },
   "devDependencies": {
-    "@types/dotenv": "^8.2.0",
+    "@types/bcryptjs": "^2.4.2",
     "@types/express": "^4.17.13",
-    "@types/express-graphql": "^0.9.0",
-    "@types/graphql": "^14.5.0",
+    "@types/jsonwebtoken": "^8.5.8",
     "@types/node": "^17.0.35",
     "@types/validator": "^13.7.2",
     "tslint": "^6.1.3",

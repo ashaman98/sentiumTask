@@ -10,7 +10,8 @@ interface EnvVars{
     PGPORT: number,
     PGUSER: string,
     PGDATABASE: string,
-    PGHOST: string
+    PGHOST: string,
+    JWTSECRET: string
 
 }
 
@@ -21,6 +22,7 @@ export const config:EnvVars = {
     PGPASSWORD: process.env.PGPASSWORD,
     PGDATABASE: process.env.PGDATABASE,
     PGUSER: process.env.PGUSER,
-    PGHOST: process.env.PGHOST
+    PGHOST: process.env.PGHOST,
+    JWTSECRET: process.env.JWTSECRET
 }
 
