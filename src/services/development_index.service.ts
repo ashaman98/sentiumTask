@@ -1,4 +1,12 @@
-import DevelopmentIndex,{DevIndexInput} from "../models/development_index"
+import { DevIndexInput } from "../inputTypes/devIndexInputs"
+import DevelopmentIndex from "../models/development_index"
+
+export async function getDevIndex(Country: string){
+   return  DevelopmentIndex.findOne({
+        where: { Country}
+    })
+
+}
 
 export async function createDevIndex(data: DevIndexInput){
     console.log(data)

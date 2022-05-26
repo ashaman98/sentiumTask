@@ -1,5 +1,3 @@
-put jwt into service
-refactor resolvers
-refactor inputTypes
-add validation for fields
+*put jwt into service
 redis
+*data loader

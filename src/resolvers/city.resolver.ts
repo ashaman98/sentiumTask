@@ -1,31 +1,33 @@
-import City, { CityInput } from "../models/city";
+import City from "../models/city";
+import { CityInput } from "../inputTypes/cityInputs"
 import { Arg, FieldResolver, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
 import DevelopmentIndex from "../models/development_index";
-import { createCity,updateCity,deleteCity } from "../services/cities.service";
+import { createCity,updateCity,deleteCity, getCity, getCitiesByCountry } from "../services/cities.service";
 import {isAdmin} from "../middlewares/isAdmin"
+import { getDevIndex } from "../services/development_index.service";
+import { isAuth } from "../middlewares/isAuth";
 
 @Resolver(City)
 export class CityResolver {
+    // @UseMiddleware(isAuth)
     @Query(returns => City)
     async city(@Arg("index") index: string) {
         console.log("the index is: ", index)
-        return City.findOne({where:{index}})
+        return getCity(index)
     }
 
     @FieldResolver(() => DevelopmentIndex,{nullable:true})
-    async devIndex(@Root() city: City){
+    async devIndex(@Root() city: CityInput){
         console.log('doing query')
-        const entry = await DevelopmentIndex.findOne({
-            where: { Country: city.Country }
-        })
 
-        return entry;
+        return getDevIndex(city.country)
     }
 
+    // @UseMiddleware(isAuth)
     @Query(returns => [City])
     async cities(@Arg("country") country: string){
         console.log("the country is: ", country)
-        return City.findAll({where:{Country: country}})
+        return getCitiesByCountry(country)
     }
 
     // @UseMiddleware(isAdmin)
@@ -36,6 +38,7 @@ export class CityResolver {
         return createCity(cityData)
     }
 
+    // @UseMiddleware(isAdmin)
     @Mutation(returns => City)
     async updateCity(
         @Arg("index") index: number ,
@@ -45,6 +48,7 @@ export class CityResolver {
         return updateCity(index, cityData)
     }
 
+    // @UseMiddleware(isAdmin)
     @Mutation(returns => String)
     async destroyCity(@Arg("index") index: number){
         console.log("city to delete:", index);

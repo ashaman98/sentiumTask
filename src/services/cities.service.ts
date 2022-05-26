@@ -1,4 +1,13 @@
-import City, { CityInput } from "../models/city";
+import City from "../models/city";
+import { CityInput } from "../inputTypes/cityInputs"
+
+export async function getCity(index: string){
+    return City.findOne({where:{index}})
+}
+
+export async function getCitiesByCountry(Country: string){
+    return City.findAll({where:{Country}})
+}
 
 export async function createCity(data: CityInput){
     console.log(data)

@@ -1,10 +1,15 @@
-import DevelopmentIndex, { DevIndexInput } from "../models/development_index";
-import { Arg, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
+import DevelopmentIndex from "../models/development_index";
+import { Arg, FieldResolver, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
 import City from "../models/city";
 import { createDevIndex, deleteDevIndex, updateDevIndex } from "../services/development_index.service";
+import { DevIndexInput } from "../inputTypes/devIndexInputs";
+import { getCitiesByCountry } from "../services/cities.service";
+import { isAdmin } from "../middlewares/isAdmin";
+import { isAuth } from "../middlewares/isAuth";
 
 @Resolver(DevelopmentIndex)
 export class DevelopmentIndexResolver{
+    // @UseMiddleware(isAuth)
     @Query(returns => DevelopmentIndex)
     async devIndex(@Arg("index") index:string){
         return DevelopmentIndex.findOne({where:{index}})
@@ -12,13 +17,11 @@ export class DevelopmentIndexResolver{
 
     @FieldResolver(()=>[City],{nullable:true})
     async cities(@Root() devIndex: DevelopmentIndex){
-        const Country = devIndex.Country
 
-        return City.findAll({
-            where: {Country}
-        })
+        return getCitiesByCountry(devIndex.Country)
     }
 
+    // @UseMiddleware(isAdmin)
     @Mutation(returns => DevelopmentIndex)
     async addDevIndex(@Arg("data") newData: DevIndexInput){
         console.log("city to add:", newData);
@@ -26,6 +29,7 @@ export class DevelopmentIndexResolver{
         return createDevIndex(newData)
     }
 
+    // @UseMiddleware(isAdmin)
     @Mutation(returns => DevelopmentIndex)
     async changeDevIndex(
         @Arg("index") index: number ,
@@ -35,6 +39,7 @@ export class DevelopmentIndexResolver{
         return updateDevIndex(index, newData)
     }
 
+    // @UseMiddleware(isAdmin)
     @Mutation(returns => String)
     async destroyDevIndex(@Arg("index") index: number){
         console.log("devIndex to delete:", index);

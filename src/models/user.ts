@@ -1,3 +1,4 @@
+import { IsInt, Length, Min } from 'class-validator'
 import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement } from 'sequelize-typescript'
 import { Field, ID, InputType, ObjectType } from 'type-graphql'
 
@@ -10,7 +11,6 @@ enum Role{
   tableName: "users"
 })
 @ObjectType()
-@InputType("UserInput")
 export default class User extends Model {
   @Field(type => ID)
   @PrimaryKey
@@ -21,7 +21,6 @@ export default class User extends Model {
   @Column(DataType.TEXT)
   "username": string
 
-  @Field()
   @Column(DataType.TEXT)
   "password": string
 

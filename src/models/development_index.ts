@@ -1,3 +1,4 @@
+import { IsInt, Length, Min } from 'class-validator'
 import { Table, Column, Model, DataType, PrimaryKey } from 'sequelize-typescript'
 import { Field, ID, ObjectType,InputType } from 'type-graphql'
 
@@ -37,28 +38,4 @@ export default class DevelopmentIndex extends Model {
     @Column(DataType.REAL)
     "HDI_Male": number
 
-}
-
-@InputType()
-export class DevIndexInput{
-  @Field()
-  index: number
-
-  @Field()
-  HdiRank: number
-
-  @Field()
-  country: string
-
-  @Field()
-  GdiValue: number
-
-  @Field()
-  GdiGroup: number
-
-  @Field()
-  HdiFemale: number
-
-  @Field()
-  HdiMale: number
 }

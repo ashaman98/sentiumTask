@@ -1,9 +1,10 @@
 import User from "../models/user";
+import { LoginUserInput, UpdateUserInput, UserInput } from "../inputTypes/userInputs"
 import bcryptjs from "bcryptjs"
 import * as jwt from "jsonwebtoken"
 import { config } from "../config";
 
-export async function signUp(data:any){
+export async function signUp(data: UserInput){
     const user = await User.create({
         username: data.username,
         password: await bcryptjs.hash(data.password, 10),
@@ -18,7 +19,7 @@ export async function signUp(data:any){
 
 }
 
-export async function logIn(data:any){
+export async function logIn(data: LoginUserInput){
     console.log("username:", data.username)
     const user = await User.findOne({ where: { username: data.username } })
     console.log(user)
@@ -42,7 +43,7 @@ export function getToken(username: string){
     return jwt.sign({username},config.JWTSECRET,{expiresIn: '12h'})
 }
 
-export async function updateUser(username: string, newData: User){
+export async function updateUser(username: string, newData: UpdateUserInput){
 
     console.log("new user data: ",newData)
     console.log("update user: ", username)
@@ -56,7 +57,6 @@ export async function updateUser(username: string, newData: User){
         password: await bcryptjs.hash(newData.password, 10),
         name: newData.name,
         surname: newData.surname,
-        role: newData.role
     })
 
      await user.save()
@@ -82,4 +82,8 @@ export async function getRole(username: string){
         throw new Error("User does not exist")
     }
     return user.role
+}
+
+export async function getUser(username: string){
+    return User.findOne({where: {username}})
 }

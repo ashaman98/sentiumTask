@@ -1,31 +1,34 @@
 import { MyContext } from "../myContext";
 import { Arg, Ctx, FieldResolver, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
 import User from "../models/user";
-import {deleteUser, logIn,signUp, updateUser} from "../services/users.service"
+import { LoginUserInput, UpdateUserInput, UserInput } from "../inputTypes/userInputs"
+import {deleteUser, getUser, logIn,signUp, updateUser} from "../services/users.service"
 import { isAuth } from "../middlewares/isAuth";
+import { isAdmin } from "../middlewares/isAdmin";
 
 @Resolver(User)
 export class UserResolver {
-    @Query(() => String)
+    @Query(() => User)
     @UseMiddleware(isAuth)
     async Me(@Ctx() { payload }: MyContext) {
-      return `Your user is : ${payload!.username}`;
+      return getUser(payload!.username)
     }
 
     @Mutation(returns => String)
-    async register(@Arg("data") userData: User){
+    async register(@Arg("data") userData: UserInput){
         const token = await signUp(userData)
 
         return token
     }
 
     @Mutation(returns => String)
-    async session(@Arg("data") userData: User){
+    async session(@Arg("data") userData: LoginUserInput){
         const token = await logIn(userData)
 
         return token
     }
 
+    // @UseMiddleware(isAdmin)
     @Mutation(returns => String)
     async destroyUser(@Arg("username") username: string){
         console.log("user to delete:", username);
@@ -35,10 +38,11 @@ export class UserResolver {
         return `user: ${username} destroyed`
     }
 
+    // @UseMiddleware(isAdmin)
     @Mutation(returns => User)
     async editUser(
         @Arg('username') username: string,
-        @Arg("data") userData: User
+        @Arg("data") userData: UpdateUserInput
     ){
         console.log("new data", userData)
 

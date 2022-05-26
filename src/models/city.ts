@@ -1,4 +1,4 @@
-import { Length } from 'class-validator'
+import { IsInt, Length, Min } from 'class-validator'
 import { Table, Column, Model, DataType, PrimaryKey } from 'sequelize-typescript'
 import { Field, ID, InputType, ObjectType } from 'type-graphql'
 
@@ -32,27 +32,4 @@ export default class City extends Model {
   @Field({name: 'long'})
   @Column(DataType.REAL)
   "Longitude": number
-}
-
-
-@InputType()
-export class CityInput{
-  @Field()
-  index: number
-
-  @Length(3, 100)
-  @Field()
-  country: string
-
-  @Field()
-  cityName: string
-
-  @Field()
-  population: number
-
-  @Field()
-  lat: number
-
-  @Field()
-  long: number
 }
