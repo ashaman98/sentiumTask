@@ -6,7 +6,7 @@ import { config } from "./config"
 import { sequelize } from "./db"
 import User from "./models/user";
 import { CityResolver } from "./resolvers/city.resolver";
-import { DevelopmentIndexResolver } from "./resolvers/devIndex.resolver";
+import { DevelopmentIndexResolver } from "./resolvers/development_Index.resolver";
 import { isObjectType } from "graphql";
 import { UserResolver } from "./resolvers/user.resolver";
 import City from "./models/city";
@@ -20,11 +20,7 @@ async function init() {
     // console.log(1)
 
     await sequelize.sync();
-
-    console.log(2)
-
-    console.log(3)
-
+    // await User.sync({force:true})
 
     const schema = await buildSchema({
         resolvers: [CityResolver, DevelopmentIndexResolver, UserResolver],
@@ -36,12 +32,12 @@ async function init() {
         schema,
         context: ({ req, res }) => ({ req, res })
     })
-    console.log(5)
+
     await server.start()
-    console.log(6)
+
 
     server.applyMiddleware({app})
-    console.log(7)
+
 
     console.log("path: ", server.graphqlPath)
 

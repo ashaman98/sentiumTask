@@ -1,6 +1,6 @@
 import City, { CityInput } from "../models/city";
 
-export async function newCity(data: CityInput){
+export async function createCity(data: CityInput){
     console.log(data)
     const exists = await City.findOne({where: {City: data.cityName}})
 
@@ -19,4 +19,38 @@ export async function newCity(data: CityInput){
 
     return city
 
+}
+
+export async function updateCity(index: number, newData: CityInput){
+    console.log("new data: ",newData)
+    console.log("change city with index: ", index)
+    const city = await City.findOne({where: {index}})
+
+    if(!city){
+        throw new Error("City does not exist")
+    }
+    city.set({
+        Country: newData.country,
+        City: newData.cityName,
+        Population: newData.population,
+        Latitude: newData.lat,
+        Longitude: newData.long,
+        index: newData.index
+    })
+
+     await city.save()
+     console.log(city);
+     return city
+}
+
+export async function deleteCity(index: number){
+
+    console.log("destroy city with index: ", index)
+    const city = await City.findOne({where: {index}})
+
+    if(!city){
+        throw new Error("City does not exist")
+    }
+
+    await city.destroy()
 }

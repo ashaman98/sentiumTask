@@ -1,3 +1,4 @@
+import { Length } from 'class-validator'
 import { Table, Column, Model, DataType, PrimaryKey } from 'sequelize-typescript'
 import { Field, ID, InputType, ObjectType } from 'type-graphql'
 
@@ -39,6 +40,7 @@ export class CityInput{
   @Field()
   index: number
 
+  @Length(3, 100)
   @Field()
   country: string
 

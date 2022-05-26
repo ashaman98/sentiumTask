@@ -1,6 +1,10 @@
 import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement } from 'sequelize-typescript'
 import { Field, ID, InputType, ObjectType } from 'type-graphql'
 
+enum Role{
+  analyst = "analyst",
+  moderator = "moderator"
+}
 @Table({
   timestamps: false,
   tableName: "users"
@@ -10,7 +14,7 @@ import { Field, ID, InputType, ObjectType } from 'type-graphql'
 export default class User extends Model {
   @Field(type => ID)
   @PrimaryKey
-  @Column(DataType.BIGINT)
+  @Column({type: DataType.BIGINT, autoIncrement: true})
   id: number
 
   @Field()
@@ -28,5 +32,9 @@ export default class User extends Model {
   @Field()
   @Column(DataType.TEXT)
   "surname": string
+
+  @Field()
+  @Column(DataType.TEXT)
+  "role": Role
 
 }

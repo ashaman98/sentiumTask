@@ -8,10 +8,11 @@ export async function signUp(data:any){
         username: data.username,
         password: await bcryptjs.hash(data.password, 10),
         name: data.name,
-        surname: data.surname
+        surname: data.surname,
+        role: data.role
     })
 
-    const token = await getToken(user.username)
+    const token = getToken(user.username)
 
     return token
 
@@ -31,13 +32,54 @@ export async function logIn(data:any){
         throw new Error('Incorrect password')
     }
 
-    const token = await getToken(user.username)
+    const token = getToken(user.username)
 
     return token
 
 }
 
-async function getToken(username: string){
+export function getToken(username: string){
     return jwt.sign({username},config.JWTSECRET,{expiresIn: '12h'})
 }
 
+export async function updateUser(username: string, newData: User){
+
+    console.log("new user data: ",newData)
+    console.log("update user: ", username)
+    const user = await User.findOne({where: {username}})
+
+    if(!user){
+        throw new Error("user does not exist")
+    }
+    user.set({
+        username: newData.username,
+        password: await bcryptjs.hash(newData.password, 10),
+        name: newData.name,
+        surname: newData.surname,
+        role: newData.role
+    })
+
+     await user.save()
+     console.log(user);
+     return user
+}
+
+export async function deleteUser(username: string){
+
+    console.log("destroy user: ", username)
+    const user = await User.findOne({where: {username}})
+
+    if(!user){
+        throw new Error("User does not exist")
+    }
+
+    await user.destroy()
+}
+
+export async function getRole(username: string){
+    const user = await User.findOne({where: {username}})
+    if(!user){
+        throw new Error("User does not exist")
+    }
+    return user.role
+}

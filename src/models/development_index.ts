@@ -1,5 +1,5 @@
 import { Table, Column, Model, DataType, PrimaryKey } from 'sequelize-typescript'
-import { Field, ID, ObjectType } from 'type-graphql'
+import { Field, ID, ObjectType,InputType } from 'type-graphql'
 
 @Table({
     timestamps: false,
@@ -13,28 +13,52 @@ export default class DevelopmentIndex extends Model {
     @Column(DataType.BIGINT)
     index: number
 
-    @Field({name: "HDIRank"})
+    @Field({name: "HdiRank"})
     @Column(DataType.BIGINT)
     "HDI Rank": number
 
-    @Field()
+    @Field({name: "country"})
     @Column(DataType.TEXT)
     "Country": string
 
-    @Field()
+    @Field({name: "GdiValue"})
     @Column(DataType.REAL)
     "GDI_Value": number
 
-    @Field()
+    @Field({name: "GdiGroup"})
     @Column(DataType.BIGINT)
     "GDI_Group": number
 
-    @Field()
+    @Field({name: "HdiFemale"})
     @Column(DataType.REAL)
     "HDI_Female": number
 
-    @Field()
+    @Field({name: "HdiMale"})
     @Column(DataType.REAL)
     "HDI_Male": number
 
+}
+
+@InputType()
+export class DevIndexInput{
+  @Field()
+  index: number
+
+  @Field()
+  HdiRank: number
+
+  @Field()
+  country: string
+
+  @Field()
+  GdiValue: number
+
+  @Field()
+  GdiGroup: number
+
+  @Field()
+  HdiFemale: number
+
+  @Field()
+  HdiMale: number
 }

@@ -1,7 +1,7 @@
 import { MyContext } from "../myContext";
 import { Arg, Ctx, FieldResolver, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
 import User from "../models/user";
-import {logIn,signUp} from "../services/users.service"
+import {deleteUser, logIn,signUp, updateUser} from "../services/users.service"
 import { isAuth } from "../middlewares/isAuth";
 
 @Resolver(User)
@@ -24,6 +24,25 @@ export class UserResolver {
         const token = await logIn(userData)
 
         return token
+    }
+
+    @Mutation(returns => String)
+    async destroyUser(@Arg("username") username: string){
+        console.log("user to delete:", username);
+
+        await deleteUser(username)
+
+        return `user: ${username} destroyed`
+    }
+
+    @Mutation(returns => User)
+    async editUser(
+        @Arg('username') username: string,
+        @Arg("data") userData: User
+    ){
+        console.log("new data", userData)
+
+        return updateUser(username,userData)
     }
 
 }
