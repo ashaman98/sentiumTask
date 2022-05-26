@@ -76,14 +76,10 @@ export async function deleteUser(username: string){
     await user.destroy()
 }
 
-export async function getRole(username: string){
+export async function getUser(username: string){
     const user = await User.findOne({where: {username}})
     if(!user){
         throw new Error("User does not exist")
     }
-    return user.role
-}
-
-export async function getUser(username: string){
-    return User.findOne({where: {username}})
+    return user
 }

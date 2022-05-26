@@ -8,5 +8,5 @@ export const sequelize = new Sequelize({
   dialect: 'postgres',
   username: config.PGUSER,
   password: config.PGPASSWORD,
-  models: [__dirname + '/models'] // or [Player, Team],
+  models: [__dirname + '/models']
 })

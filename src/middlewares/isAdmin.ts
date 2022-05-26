@@ -2,7 +2,7 @@ import { MiddlewareFn } from "type-graphql";
 import { JwtPayload } from "jsonwebtoken";
 import { MyContext } from "../myContext";
 import { checkJwt } from "../utils/utils";
-import {getRole} from "../services/users.service"
+import { getUser} from "../services/users.service"
 
 export const isAdmin: MiddlewareFn<MyContext> = async ({ context }, next) => {
   console.log("action is :", context.req.headers);
@@ -10,9 +10,9 @@ export const isAdmin: MiddlewareFn<MyContext> = async ({ context }, next) => {
   const token = context.req.headers.authorization;
   const payload = checkJwt(token) as JwtPayload;
 
-  const role = await getRole(payload.username)
+  const user = await getUser(payload.username)
 
-  if(role === 'moderator'){
+  if(user.role === 'moderator'){
     context.payload = {
         username: payload.username
       }

@@ -41,15 +41,15 @@ export class UpdateUserInput{
   "username": string
 
   @Length(2, 100)
-  @Field()
+  @Field({ nullable: true })
   "password": string
 
   @Length(2, 100)
-  @Field()
+  @Field({ nullable: true })
   "name": string
 
   @Length(2, 100)
-  @Field()
+  @Field({ nullable: true })
   "surname": string
 
 }
