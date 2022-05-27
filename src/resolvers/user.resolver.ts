@@ -14,6 +14,12 @@ export class UserResolver {
       return getUser(payload!.username)
     }
 
+    @Query(() => User)
+    @UseMiddleware(isAdmin)
+    async getUser(@Arg("username") username: string) {
+      return getUser(username)
+    }
+
     @Mutation(returns => String)
     async register(@Arg("data") userData: UserInput){
         const token = await signUp(userData)
