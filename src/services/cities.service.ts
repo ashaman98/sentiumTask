@@ -1,8 +1,24 @@
 import City from "../models/city";
 import { CityInput, UpdateCityInput } from "../inputTypes/cityInputs"
+import {getClient}  from "../redis";
+
+
 
 export async function getCity(index: string){
-    return City.findOne({where:{index}})
+    const city = await City.findOne({where:{index}})
+
+    const client = await getClient()
+
+    console.log(JSON.stringify(city));
+
+
+    await client.set(`city:${index}`, JSON.stringify(city));
+
+    const redisCache = await client.get(`city:${index}`)
+    console.log("redis:", redisCache);
+
+
+    return city
 }
 
 export async function getCitiesByCountry(Country: string){
