@@ -1,7 +1,7 @@
 import { MiddlewareFn } from "type-graphql";
 import { JwtPayload } from "jsonwebtoken";
 import { MyContext } from "../myContext";
-import { checkJwt } from "../utils/utils";
+import { checkJwt } from "../utils/checkToken";
 import { getUser} from "../services/users.service"
 
 export const isAdmin: MiddlewareFn<MyContext> = async ({ context }, next) => {

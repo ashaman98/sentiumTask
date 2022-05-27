@@ -3,6 +3,7 @@ import express from "express"
 import { buildSchema } from "type-graphql";
 import { config } from "./config"
 import { sequelize } from "./db"
+import { redisClient } from "./redis";
 import { CityResolver } from "./resolvers/city.resolver";
 import { DevelopmentIndexResolver } from "./resolvers/development_Index.resolver";
 import { UserResolver } from "./resolvers/user.resolver";
@@ -34,10 +35,12 @@ async function init() {
 
     console.log("path: ", server.graphqlPath)
 
-    app.listen(config.PORT, () => {
-        console.log(`server started at http://localhost:${config.PORT}`);
-    });
 
+    redisClient.connect().then(()=>{
+        app.listen(config.PORT, () => {
+            console.log(`server started at http://localhost:${config.PORT}`);
+        });
+    })
 
 
 }

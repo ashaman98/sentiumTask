@@ -1,7 +1,7 @@
 import { MiddlewareFn } from "type-graphql";
 import { JwtPayload } from "jsonwebtoken";
 import { MyContext } from "../myContext";
-import { checkJwt } from "../utils/utils";
+import { checkJwt } from "../utils/checkToken";
 
 export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
   console.log("action is :", context.req.headers);

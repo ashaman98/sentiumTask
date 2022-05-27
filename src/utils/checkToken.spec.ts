@@ -1,6 +1,6 @@
 import * as jwt from "jsonwebtoken"
 import { config } from "../config"
-import {checkJwt} from "./utils"
+import {checkJwt} from "./checkToken"
 
 it('should check auth by token', () =>{
     const token = jwt.sign({name: "John", surname: "Doe"},config.JWTSECRET)

@@ -1,24 +1,44 @@
 import City from "../models/city";
 import { CityInput, UpdateCityInput } from "../inputTypes/cityInputs"
-import {getClient}  from "../redis";
+import {redisClient}  from "../redis";
+import { cacheHit } from "../utils/redisHelpers";
 
 
 
 export async function getCity(index: string){
-    const city = await City.findOne({where:{index}})
 
-    const client = await getClient()
+    const result = await redisClient.lRange(City.name, 0, -1)
+    console.log("cache array:", result)
 
-    console.log(JSON.stringify(city));
+    const cachedVal = await cacheHit(City.name, {index})
+
+    console.log("cache find:",cachedVal)
+
+    if(!cachedVal.length){
+        const city = await City.findOne({where:{index}})
+
+        console.log(JSON.stringify(city));
+
+        await redisClient.lPush(City.name, JSON.stringify(city))
+
+        console.log('returning from orm');
+
+        return city
+    }
+
+    // const city = await City.findOne({where:{index}})
 
 
-    await client.set(`city:${index}`, JSON.stringify(city));
 
-    const redisCache = await client.get(`city:${index}`)
-    console.log("redis:", redisCache);
+    // console.log(JSON.stringify(city));
 
+    // console.log("model name is:",City.name)
 
-    return city
+    // await redisClient.lPush(City.name, JSON.stringify(city))
+
+    console.log('returning from redis');
+
+    return cachedVal
 }
 
 export async function getCitiesByCountry(Country: string){
