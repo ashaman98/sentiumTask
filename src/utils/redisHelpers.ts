@@ -1,25 +1,9 @@
-import { Model } from "sequelize-typescript";
 import { redisClient } from "../redis";
 
 export async function cacheHit(modelName: string,params:any){
-    // if format is client.pushL('modelName',json.stringify(data))
-    /*
-        params = {
-            index:,
-            Country:,
-            username:
-            City:
-        }
-    */
-    let targetKey: string
-    let targetValue: string
-    Object.keys(params).forEach(key => {
-        if (params[key] !== null) {
-            targetKey = key
-            targetValue = params[key]
-        }
-        delete params[key];
-    });
+   
+    const targetKey = Object.keys(params)[0]
+    const targetValue= params[targetKey]
 
     const hitResult = await redisClient.lRange(`${modelName}`,0,-1)
 
@@ -37,6 +21,5 @@ export async function cacheHit(modelName: string,params:any){
 
 
     return result
-
 
 }
