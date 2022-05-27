@@ -26,19 +26,9 @@ export async function getCity(index: string){
         return city
     }
 
-    // const city = await City.findOne({where:{index}})
-
-
-
-    // console.log(JSON.stringify(city));
-
-    // console.log("model name is:",City.name)
-
-    // await redisClient.lPush(City.name, JSON.stringify(city))
-
     console.log('returning from redis');
 
-    return cachedVal
+    return cachedVal[0]
 }
 
 export async function getCitiesByCountry(Country: string){
