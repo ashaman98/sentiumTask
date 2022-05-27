@@ -1,7 +1,7 @@
 import DevelopmentIndex from "../models/development_index";
 import { Arg, FieldResolver, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
 import City from "../models/city";
-import { createDevIndex, deleteDevIndex, updateDevIndex } from "../services/development_index.service";
+import { createDevIndex, deleteDevIndex, getDevIndex, updateDevIndex } from "../services/development_index.service";
 import { DevIndexInput, UpdateDevIndexInput } from "../inputTypes/devIndexInputs";
 import { getCitiesByCountry } from "../services/cities.service";
 import { isAdmin } from "../middlewares/isAdmin";
@@ -11,8 +11,8 @@ import { isAuth } from "../middlewares/isAuth";
 export class DevelopmentIndexResolver{
     // @UseMiddleware(isAuth)
     @Query(returns => DevelopmentIndex)
-    async devIndex(@Arg("index") index:string){
-        return DevelopmentIndex.findOne({where:{index}})
+    async devIndex(@Arg("Country") Country:string){
+        return getDevIndex(Country)
     }
 
     @FieldResolver(()=>[City],{nullable:true})
