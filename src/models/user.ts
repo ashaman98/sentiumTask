@@ -1,6 +1,5 @@
-import { IsInt, Length, Min } from 'class-validator'
-import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement } from 'sequelize-typescript'
-import { Field, ID, InputType, ObjectType } from 'type-graphql'
+import { Table, Column, Model, DataType, PrimaryKey} from 'sequelize-typescript'
+import { Field, ID, ObjectType } from 'type-graphql'
 
 enum Role{
   analyst = "analyst",

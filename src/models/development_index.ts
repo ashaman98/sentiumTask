@@ -1,6 +1,5 @@
-import { IsInt, Length, Min } from 'class-validator'
 import { Table, Column, Model, DataType, PrimaryKey } from 'sequelize-typescript'
-import { Field, ID, ObjectType,InputType } from 'type-graphql'
+import { Field, ID, ObjectType} from 'type-graphql'
 
 @Table({
     timestamps: false,

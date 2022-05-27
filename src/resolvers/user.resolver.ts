@@ -1,5 +1,5 @@
 import { MyContext } from "../myContext";
-import { Arg, Ctx, FieldResolver, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
+import { Arg, Ctx, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
 import User from "../models/user";
 import { LoginUserInput, UpdateUserInput, UserInput } from "../inputTypes/userInputs"
 import {deleteUser, getUser, logIn,signUp, updateUser} from "../services/users.service"
