@@ -48,5 +48,3 @@ JWTSECRET=#############
 REDISPORT = ######### 
 ```
 </br>
-
-Author: Karapet Karamyan
