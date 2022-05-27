@@ -1,25 +1,28 @@
 import City from "../models/city";
 import { CityInput, UpdateCityInput } from "../inputTypes/cityInputs"
 import {redisClient}  from "../redis";
-import { cacheHit } from "../utils/redisHelpers";
+import { cacheHit, dropFromCache } from "../utils/redisHelpers";
 
 
 
 export async function getCity(index: string){
 
-    const result = await redisClient.lRange(City.name, 0, -1)
+    // const result = await redisClient.lRange(City.name, 0, -1)
+    // console.log("cache array:", result)
+
+    const result = await redisClient.hGetAll(City.name)
     console.log("cache array:", result)
 
     const cachedVal = await cacheHit(City.name, {index})
 
     console.log("cache find:",cachedVal)
 
-    if(!cachedVal.length){
+    if(!cachedVal){
         const city = await City.findOne({where:{index}})
 
         console.log(JSON.stringify(city));
 
-        await redisClient.lPush(City.name, JSON.stringify(city))
+        await redisClient.HSET(City.name, index ,JSON.stringify(city))
 
         console.log('returning from orm');
 
@@ -28,7 +31,7 @@ export async function getCity(index: string){
 
     console.log('returning from redis');
 
-    return cachedVal[0]
+    return cachedVal
 }
 
 export async function getCitiesByCountry(Country: string){
@@ -37,7 +40,16 @@ export async function getCitiesByCountry(Country: string){
 
 export async function createCity(data: CityInput){
     console.log(data)
-    const exists = await City.findOne({where: {City: data.cityName}})
+
+    const cachedVal = await cacheHit(City.name, {index: data.index})
+
+    if(cachedVal){
+        console.log("checked redis on CityCreate");
+        throw new Error("City already exists")
+    }
+
+    const exists = await City.findOne({where: {index: data.index}})
+    await redisClient.HSET(City.name, data.index ,JSON.stringify(data))
 
     if(exists){
         throw new Error("City already exists")
@@ -64,6 +76,7 @@ export async function updateCity(index: number, newData: UpdateCityInput){
     if(!city){
         throw new Error("City does not exist")
     }
+    await dropFromCache(City.name, {index})
     city.set({
         Country: newData.country || city.Country,
         City: newData.cityName || city.City,
