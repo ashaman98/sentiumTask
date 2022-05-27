@@ -1,16 +1,43 @@
 import { DevIndexInput, UpdateDevIndexInput } from "../inputTypes/devIndexInputs"
+import { cacheHit } from "../utils/redisHelpers"
 import DevelopmentIndex from "../models/development_index"
+import { redisClient } from "../redis"
 
 export async function getDevIndex(Country: string){
-   return  DevelopmentIndex.findOne({
-        where: { Country}
-    })
+
+    const cachedVal = await cacheHit(DevelopmentIndex.name, {Country})
+
+    console.log("cache find:",cachedVal)
+
+    if(!cachedVal){
+        const city = await DevelopmentIndex.findOne({where:{Country}})
+
+        console.log(JSON.stringify(city));
+
+        await redisClient.HSET(DevelopmentIndex.name, Country ,JSON.stringify(city))
+
+        console.log('returning from orm');
+
+        return city
+    }
+
+    console.log('returning from redis');
+
+    return cachedVal
 
 }
 
 export async function createDevIndex(data: DevIndexInput){
     console.log(data)
+    const cachedVal = await cacheHit(DevelopmentIndex.name, {Country: data.country})
+
+    if(cachedVal){
+        console.log("checked redis on CityCreate");
+        throw new Error("City already exists")
+    }
+
     const exists = await DevelopmentIndex.findOne({where: {Country: data.country}})
+    await redisClient.HSET(DevelopmentIndex.name, data.country ,JSON.stringify(data))
 
     if(exists){
         throw new Error("Entry for that country already exists")

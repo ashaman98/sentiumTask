@@ -33,7 +33,7 @@ export async function cacheHit(modelName: string,params:any){
     console.log('targetValue', targetValue)
 
     try{
-        const hitResult = await redisClient.hGet(`${modelName}`,targetValue)
+        const hitResult = await redisClient.hGet(modelName,targetValue)
         console.log("hit Result:", hitResult)
 
 
@@ -53,7 +53,7 @@ export async function dropFromCache(modelName: string,params:any){
     console.log('targetValue', targetValue)
 
     try{
-        const hitResult = await redisClient.hDel(`${modelName}`,targetValue)
+        const hitResult = await redisClient.hDel(modelName,JSON.stringify(targetValue)) // FIX THIS
         console.log("hit Result:", hitResult)
         const check = await cacheHit(modelName,params)
         console.log("check delete:", check)

@@ -3,6 +3,8 @@ import { LoginUserInput, UpdateUserInput, UserInput } from "../inputTypes/userIn
 import bcryptjs from "bcryptjs"
 import * as jwt from "jsonwebtoken"
 import { config } from "../config";
+import { redisClient } from "../redis";
+import { cacheHit } from "../utils/redisHelpers";
 
 export async function signUp(data: UserInput){
     const user = await User.create({
@@ -20,13 +22,24 @@ export async function signUp(data: UserInput){
 }
 
 export async function logIn(data: LoginUserInput){
-    console.log("username:", data.username)
-    const user = await User.findOne({ where: { username: data.username } })
-    console.log(user)
-    if(!user){
-        throw new Error('No user with that username')
-    }
 
+    const result = await redisClient.hGetAll(User.name)
+    console.log("cache array:", result)
+
+    const cachedVal = await cacheHit(User.name, { username: data.username })
+
+    console.log("cache find:",cachedVal)
+
+    let user : User
+
+    if(!cachedVal){
+        user = await User.findOne({ where: { username: data.username } })
+        console.log(user)
+        if(!user){
+            throw new Error('No user with that username')
+        }
+    }
+    user = cachedVal
     const valid = await bcryptjs.compare(data.password, user.password)
 
     if (!valid) {
@@ -36,6 +49,7 @@ export async function logIn(data: LoginUserInput){
     const token = getToken(user.username)
 
     return token
+
 
 }
 
@@ -77,9 +91,27 @@ export async function deleteUser(username: string){
 }
 
 export async function getUser(username: string){
-    const user = await User.findOne({where: {username}})
-    if(!user){
-        throw new Error("User does not exist")
+
+    const result = await redisClient.hGetAll(User.name)
+    console.log("cache array:", result)
+
+    const cachedVal = await cacheHit(User.name, {username})
+
+    console.log("cache find:",cachedVal)
+
+    if(!cachedVal){
+        const city = await User.findOne({where:{username}})
+
+        console.log(JSON.stringify(city));
+
+        await redisClient.HSET(User.name, username ,JSON.stringify(city))
+
+        console.log('returning from orm');
+
+        return city
     }
-    return user
+
+    console.log('returning from redis');
+
+    return cachedVal
 }
