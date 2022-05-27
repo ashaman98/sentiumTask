@@ -1,4 +1,4 @@
-import { DevIndexInput } from "../inputTypes/devIndexInputs"
+import { DevIndexInput, UpdateDevIndexInput } from "../inputTypes/devIndexInputs"
 import DevelopmentIndex from "../models/development_index"
 
 export async function getDevIndex(Country: string){
@@ -29,7 +29,7 @@ export async function createDevIndex(data: DevIndexInput){
     return devIndex
 }
 
-export async function updateDevIndex(index: number, newData: DevIndexInput){
+export async function updateDevIndex(index: number, newData: UpdateDevIndexInput){
     console.log("new data: ",newData)
     console.log("change city with index: ", index)
     const devIndex = await DevelopmentIndex.findOne({where: {index}})
@@ -38,13 +38,13 @@ export async function updateDevIndex(index: number, newData: DevIndexInput){
         throw new Error("City does not exist")
     }
     devIndex.set({
-        index: newData.index,
-        "HDI Rank": newData.HdiRank,
-        Country: newData.country,
-        GDI_Value: newData.GdiValue,
-        GDI_Group: newData.GdiGroup,
-        HDI_Female: newData.HdiFemale,
-        HDI_Male: newData.HdiMale
+        index: newData.index || devIndex.index,
+        "HDI Rank": newData.HdiRank || devIndex["HDI Rank"],
+        Country: newData.country || devIndex.Country,
+        GDI_Value: newData.GdiValue || devIndex.GDI_Value,
+        GDI_Group: newData.GdiGroup || devIndex.GDI_Value,
+        HDI_Female: newData.HdiFemale || devIndex.HDI_Female,
+        HDI_Male: newData.HdiMale || devIndex.HDI_Male
     })
 
      await devIndex.save()

@@ -2,7 +2,7 @@ import DevelopmentIndex from "../models/development_index";
 import { Arg, FieldResolver, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
 import City from "../models/city";
 import { createDevIndex, deleteDevIndex, updateDevIndex } from "../services/development_index.service";
-import { DevIndexInput } from "../inputTypes/devIndexInputs";
+import { DevIndexInput, UpdateDevIndexInput } from "../inputTypes/devIndexInputs";
 import { getCitiesByCountry } from "../services/cities.service";
 import { isAdmin } from "../middlewares/isAdmin";
 import { isAuth } from "../middlewares/isAuth";
@@ -33,7 +33,7 @@ export class DevelopmentIndexResolver{
     @Mutation(returns => DevelopmentIndex)
     async changeDevIndex(
         @Arg("index") index: number ,
-        @Arg("newData")newData: DevIndexInput){
+        @Arg("newData")newData: UpdateDevIndexInput){
         console.log("city to update:", newData);
 
         return updateDevIndex(index, newData)

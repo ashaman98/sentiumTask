@@ -1,5 +1,5 @@
 import City from "../models/city";
-import { CityInput } from "../inputTypes/cityInputs"
+import { CityInput, UpdateCityInput } from "../inputTypes/cityInputs"
 
 export async function getCity(index: string){
     return City.findOne({where:{index}})
@@ -30,7 +30,7 @@ export async function createCity(data: CityInput){
 
 }
 
-export async function updateCity(index: number, newData: CityInput){
+export async function updateCity(index: number, newData: UpdateCityInput){
     console.log("new data: ",newData)
     console.log("change city with index: ", index)
     const city = await City.findOne({where: {index}})
@@ -39,12 +39,12 @@ export async function updateCity(index: number, newData: CityInput){
         throw new Error("City does not exist")
     }
     city.set({
-        Country: newData.country,
-        City: newData.cityName,
-        Population: newData.population,
-        Latitude: newData.lat,
-        Longitude: newData.long,
-        index: newData.index
+        Country: newData.country || city.Country,
+        City: newData.cityName || city.City,
+        Population: newData.population || city.Population,
+        Latitude: newData.lat || city.Latitude,
+        Longitude: newData.long || city.Longitude,
+        index: newData.index || city.index
     })
 
      await city.save()

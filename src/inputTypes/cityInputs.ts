@@ -27,3 +27,30 @@ export class CityInput{
   @Field()
   long: number
 }
+
+@InputType()
+export class UpdateCityInput{
+  @IsInt()
+  @Min(0)
+  @Field({ nullable: true })
+  index: number
+
+  @Length(2, 100)
+  @Field({ nullable: true })
+  country: string
+
+  @Length(2, 100)
+  @Field({ nullable: true })
+  cityName: string
+
+  @IsInt()
+  @Min(0)
+  @Field({ nullable: true })
+  population: number
+
+  @Field({ nullable: true })
+  lat: number
+
+  @Field({ nullable: true })
+  long: number
+}

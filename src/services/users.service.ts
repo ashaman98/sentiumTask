@@ -54,9 +54,9 @@ export async function updateUser(username: string, newData: UpdateUserInput){
     }
     user.set({
         username: newData.username,
-        password: await bcryptjs.hash(newData.password, 10),
-        name: newData.name,
-        surname: newData.surname,
+        password: newData.password ? await bcryptjs.hash(newData.password, 10) : user.password,
+        name: newData.name || user.name,
+        surname: newData.surname || user.surname,
     })
 
      await user.save()

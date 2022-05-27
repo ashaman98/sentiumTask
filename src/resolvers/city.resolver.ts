@@ -1,5 +1,5 @@
 import City from "../models/city";
-import { CityInput } from "../inputTypes/cityInputs"
+import { CityInput, UpdateCityInput } from "../inputTypes/cityInputs"
 import { Arg, FieldResolver, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
 import DevelopmentIndex from "../models/development_index";
 import { createCity,updateCity,deleteCity, getCity, getCitiesByCountry } from "../services/cities.service";
@@ -42,7 +42,7 @@ export class CityResolver {
     @Mutation(returns => City)
     async updateCity(
         @Arg("index") index: number ,
-        @Arg("newData")cityData: CityInput){
+        @Arg("newData")cityData: UpdateCityInput){
         console.log("city to update:", cityData);
 
         return updateCity(index, cityData)
