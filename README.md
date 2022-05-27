@@ -28,6 +28,9 @@ How to run Redis:</br>
 3. add `redis` port to the `.env`</br>
 4. can connect to redis console using `redis-cli`</br>
 
+How to run Unit Tests:</br>
+1.`npm run test`
+
 ENV template:
 ```
 
