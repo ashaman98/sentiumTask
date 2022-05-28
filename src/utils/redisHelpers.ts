@@ -1,4 +1,3 @@
-import { Model } from "sequelize-typescript";
 import { redisClient } from "../redis";
 
 export async function cacheHit(modelName: string,params:any){
