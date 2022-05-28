@@ -60,3 +60,4 @@ REDISPORT = #########
 1. Cache optimization</br>
 2. GraphQL optimization with Dataloader</br>
 3. Some service and util refactoring</br>
+4. Add foreign keys to the db tables and implement transactions</br>
