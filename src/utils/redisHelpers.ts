@@ -1,28 +1,5 @@
+import { Model } from "sequelize-typescript";
 import { redisClient } from "../redis";
-
-// export async function cacheHit(modelName: string,params:any){
-
-//     const targetKey = Object.keys(params)[0]
-//     const targetValue= params[targetKey]
-
-//     const hitResult = await redisClient.lRange(`${modelName}`,0,-1)
-
-//     console.log("hit Result:", hitResult)
-//     console.log('targetKey', targetKey);
-//     console.log('targetValue', targetValue)
-
-
-//     const result = hitResult.map(e => JSON.parse(e)).filter(element=> {
-//         console.log("parsed elem:", element)
-//         return element[targetKey] === targetValue
-//     });
-
-//     console.log('cache found: ',result);
-
-
-//     return result
-
-// }
 
 export async function cacheHit(modelName: string,params:any){
 
@@ -33,7 +10,7 @@ export async function cacheHit(modelName: string,params:any){
     console.log('targetValue', targetValue)
 
     try{
-        const hitResult = await redisClient.hGet(modelName,targetValue)
+        const hitResult = await redisClient.hGet(modelName,`key-${targetValue}`)
         console.log("hit Result:", hitResult)
 
 
@@ -51,9 +28,13 @@ export async function dropFromCache(modelName: string,params:any){
 
     console.log('targetKey', targetKey);
     console.log('targetValue', targetValue)
+    console.log("modelname: ", modelName);
 
+
+    const result = await redisClient.hGetAll(modelName)
+    console.log("cache array:", result)
     try{
-        const hitResult = await redisClient.hDel(modelName,JSON.stringify(targetValue)) // FIX THIS
+        const hitResult = await redisClient.hDel(modelName,`key-${targetValue}`)
         console.log("hit Result:", hitResult)
         const check = await cacheHit(modelName,params)
         console.log("check delete:", check)
@@ -64,4 +45,8 @@ export async function dropFromCache(modelName: string,params:any){
         console.log(err)
     }
 
+}
+
+export async function setCache(modelName: string, param: any, object: any){
+    await redisClient.HSET(modelName, `key-${param}` ,JSON.stringify(object))
 }

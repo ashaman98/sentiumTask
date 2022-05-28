@@ -4,7 +4,7 @@ import bcryptjs from "bcryptjs"
 import * as jwt from "jsonwebtoken"
 import { config } from "../config";
 import { redisClient } from "../redis";
-import { cacheHit } from "../utils/redisHelpers";
+import { cacheHit, dropFromCache, setCache } from "../utils/redisHelpers";
 
 export async function signUp(data: UserInput){
     const user = await User.create({
@@ -16,6 +16,7 @@ export async function signUp(data: UserInput){
     })
 
     const token = getToken(user.username)
+    await setCache(User.name, user.username, user)
 
     return token
 
@@ -26,20 +27,12 @@ export async function logIn(data: LoginUserInput){
     const result = await redisClient.hGetAll(User.name)
     console.log("cache array:", result)
 
-    const cachedVal = await cacheHit(User.name, { username: data.username })
+    const user = await getUser(data.username)
 
-    console.log("cache find:",cachedVal)
-
-    let user : User
-
-    if(!cachedVal){
-        user = await User.findOne({ where: { username: data.username } })
-        console.log(user)
-        if(!user){
-            throw new Error('No user with that username')
-        }
+    if(!user){
+        throw new Error('No user with that username')
     }
-    user = cachedVal
+
     const valid = await bcryptjs.compare(data.password, user.password)
 
     if (!valid) {
@@ -62,6 +55,7 @@ export async function updateUser(username: string, newData: UpdateUserInput){
     console.log("new user data: ",newData)
     console.log("update user: ", username)
     const user = await User.findOne({where: {username}})
+    await dropFromCache(User.name, username)
 
     if(!user){
         throw new Error("user does not exist")
@@ -88,6 +82,7 @@ export async function deleteUser(username: string){
     }
 
     await user.destroy()
+    await dropFromCache(User.name, username)
 }
 
 export async function getUser(username: string){
@@ -100,15 +95,15 @@ export async function getUser(username: string){
     console.log("cache find:",cachedVal)
 
     if(!cachedVal){
-        const city = await User.findOne({where:{username}})
+        const user = await User.findOne({where:{username}})
 
-        console.log(JSON.stringify(city));
+        console.log(JSON.stringify(user));
 
-        await redisClient.HSET(User.name, username ,JSON.stringify(city))
+        await setCache(User.name, username, user)
 
         console.log('returning from orm');
 
-        return city
+        return user
     }
 
     console.log('returning from redis');

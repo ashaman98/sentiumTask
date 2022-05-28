@@ -1,5 +1,5 @@
 import { DevIndexInput, UpdateDevIndexInput } from "../inputTypes/devIndexInputs"
-import { cacheHit } from "../utils/redisHelpers"
+import { cacheHit, dropFromCache, setCache } from "../utils/redisHelpers"
 import DevelopmentIndex from "../models/development_index"
 import { redisClient } from "../redis"
 
@@ -10,15 +10,15 @@ export async function getDevIndex(Country: string){
     console.log("cache find:",cachedVal)
 
     if(!cachedVal){
-        const city = await DevelopmentIndex.findOne({where:{Country}})
+        const devIndex = await DevelopmentIndex.findOne({where:{Country}})
 
-        console.log(JSON.stringify(city));
+        console.log(JSON.stringify(devIndex));
 
-        await redisClient.HSET(DevelopmentIndex.name, Country ,JSON.stringify(city))
+        await setCache(DevelopmentIndex.name, Country, devIndex)
 
         console.log('returning from orm');
 
-        return city
+        return devIndex
     }
 
     console.log('returning from redis');
@@ -37,7 +37,6 @@ export async function createDevIndex(data: DevIndexInput){
     }
 
     const exists = await DevelopmentIndex.findOne({where: {Country: data.country}})
-    await redisClient.HSET(DevelopmentIndex.name, data.country ,JSON.stringify(data))
 
     if(exists){
         throw new Error("Entry for that country already exists")
@@ -52,6 +51,7 @@ export async function createDevIndex(data: DevIndexInput){
         HDI_Female: data.HdiFemale,
         HDI_Male: data.HdiMale
     })
+    await setCache(DevelopmentIndex.name, devIndex.Country, devIndex)
 
     return devIndex
 }
@@ -64,6 +64,8 @@ export async function updateDevIndex(index: number, newData: UpdateDevIndexInput
     if(!devIndex){
         throw new Error("City does not exist")
     }
+    await dropFromCache(DevelopmentIndex.name, index)
+
     devIndex.set({
         index: newData.index || devIndex.index,
         "HDI Rank": newData.HdiRank || devIndex["HDI Rank"],
@@ -89,4 +91,5 @@ export async function deleteDevIndex(index: number){
     }
 
     await devIndex.destroy()
+    await dropFromCache(DevelopmentIndex.name, index)
 }

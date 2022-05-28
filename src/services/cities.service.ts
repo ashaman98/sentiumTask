@@ -1,14 +1,11 @@
 import City from "../models/city";
 import { CityInput, UpdateCityInput } from "../inputTypes/cityInputs"
 import {redisClient}  from "../redis";
-import { cacheHit, dropFromCache } from "../utils/redisHelpers";
+import { cacheHit, dropFromCache, setCache } from "../utils/redisHelpers";
 
 
 
-export async function getCity(index: string){
-
-    // const result = await redisClient.lRange(City.name, 0, -1)
-    // console.log("cache array:", result)
+export async function getCity(index: string | number){
 
     const result = await redisClient.hGetAll(City.name)
     console.log("cache array:", result)
@@ -22,7 +19,7 @@ export async function getCity(index: string){
 
         console.log(JSON.stringify(city));
 
-        await redisClient.HSET(City.name, index ,JSON.stringify(city))
+        await setCache(City.name, index, city)
 
         console.log('returning from orm');
 
@@ -41,15 +38,7 @@ export async function getCitiesByCountry(Country: string){
 export async function createCity(data: CityInput){
     console.log(data)
 
-    const cachedVal = await cacheHit(City.name, {index: data.index})
-
-    if(cachedVal){
-        console.log("checked redis on CityCreate");
-        throw new Error("City already exists")
-    }
-
-    const exists = await City.findOne({where: {index: data.index}})
-    await redisClient.HSET(City.name, data.index ,JSON.stringify(data))
+    const exists = await getCity(data.index)
 
     if(exists){
         throw new Error("City already exists")
@@ -63,6 +52,8 @@ export async function createCity(data: CityInput){
         Longitude: data.long,
         index: data.index
     })
+
+    await setCache(City.name, city.index, city)
 
     return city
 
@@ -94,6 +85,7 @@ export async function updateCity(index: number, newData: UpdateCityInput){
 export async function deleteCity(index: number){
 
     console.log("destroy city with index: ", index)
+
     const city = await City.findOne({where: {index}})
 
     if(!city){
@@ -101,4 +93,5 @@ export async function deleteCity(index: number){
     }
 
     await city.destroy()
+    await dropFromCache(City.name, {index})
 }
