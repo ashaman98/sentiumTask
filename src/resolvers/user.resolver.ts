@@ -34,7 +34,7 @@ export class UserResolver {
         return token
     }
 
-    // @UseMiddleware(isAdmin)
+    @UseMiddleware(isAdmin)
     @Mutation(returns => String)
     async destroyUser(@Arg("username") username: string){
         console.log("user to delete:", username);
@@ -44,7 +44,7 @@ export class UserResolver {
         return `user: ${username} destroyed`
     }
 
-    // @UseMiddleware(isAdmin)
+    @UseMiddleware(isAdmin)
     @Mutation(returns => User)
     async editUser(
         @Arg('username') username: string,

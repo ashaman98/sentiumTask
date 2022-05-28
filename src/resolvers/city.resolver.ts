@@ -9,7 +9,7 @@ import { isAuth } from "../middlewares/isAuth";
 
 @Resolver(City)
 export class CityResolver {
-    // @UseMiddleware(isAuth)
+    @UseMiddleware(isAuth)
     @Query(returns => City)
     async city(@Arg("index") index: string) {
         console.log("the index is: ", index)
@@ -23,14 +23,14 @@ export class CityResolver {
         return getDevIndex(city.country)
     }
 
-    // @UseMiddleware(isAuth)
+    @UseMiddleware(isAuth)
     @Query(returns => [City])
     async cities(@Arg("country") country: string){
         console.log("the country is: ", country)
         return getCitiesByCountry(country)
     }
 
-    // @UseMiddleware(isAdmin)
+    @UseMiddleware(isAdmin)
     @Mutation(returns => City)
     async addCity(@Arg("data") cityData: CityInput){
         console.log("city to add:", cityData);
@@ -38,7 +38,7 @@ export class CityResolver {
         return createCity(cityData)
     }
 
-    // @UseMiddleware(isAdmin)
+    @UseMiddleware(isAdmin)
     @Mutation(returns => City)
     async updateCity(
         @Arg("index") index: number ,
@@ -48,7 +48,7 @@ export class CityResolver {
         return updateCity(index, cityData)
     }
 
-    // @UseMiddleware(isAdmin)
+    @UseMiddleware(isAdmin)
     @Mutation(returns => String)
     async destroyCity(@Arg("index") index: number){
         console.log("city to delete:", index);
