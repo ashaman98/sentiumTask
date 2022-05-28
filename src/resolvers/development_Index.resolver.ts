@@ -9,7 +9,7 @@ import { isAuth } from "../middlewares/isAuth";
 
 @Resolver(DevelopmentIndex)
 export class DevelopmentIndexResolver{
-    // @UseMiddleware(isAuth)
+    @UseMiddleware(isAuth)
     @Query(returns => DevelopmentIndex)
     async devIndex(@Arg("Country") Country:string){
         return getDevIndex(Country)
@@ -21,7 +21,7 @@ export class DevelopmentIndexResolver{
         return getCitiesByCountry(devIndex.Country)
     }
 
-    // @UseMiddleware(isAdmin)
+    @UseMiddleware(isAdmin)
     @Mutation(returns => DevelopmentIndex)
     async addDevIndex(@Arg("data") newData: DevIndexInput){
         console.log("city to add:", newData);
@@ -29,7 +29,7 @@ export class DevelopmentIndexResolver{
         return createDevIndex(newData)
     }
 
-    // @UseMiddleware(isAdmin)
+    @UseMiddleware(isAdmin)
     @Mutation(returns => DevelopmentIndex)
     async changeDevIndex(
         @Arg("index") index: number ,
@@ -39,7 +39,7 @@ export class DevelopmentIndexResolver{
         return updateDevIndex(index, newData)
     }
 
-    // @UseMiddleware(isAdmin)
+    @UseMiddleware(isAdmin)
     @Mutation(returns => String)
     async destroyDevIndex(@Arg("index") index: number){
         console.log("devIndex to delete:", index);
