@@ -17,10 +17,10 @@ export class CityResolver {
     }
 
     @FieldResolver(() => DevelopmentIndex,{nullable:true})
-    async devIndex(@Root() city: CityInput){
+    async devIndex(@Root() city: City){
         console.log('doing query')
 
-        return getDevIndex(city.country)
+        return getDevIndex(city.Country)
     }
 
     @UseMiddleware(isAuth)
